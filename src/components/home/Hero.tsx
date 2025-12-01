@@ -1,7 +1,21 @@
-import { ArrowRight, Play, TrendingUp, Star } from 'lucide-react';
-import heroSvg from '../../assets/herosvg.svg';
+import { useState, useEffect } from 'react';
+import { ArrowRight, Play, TrendingUp, Star, Loader2 } from 'lucide-react';
+import Lottie from 'lottie-react';
+import gameControllerAnimation from '../../assets/GameController.json';
 
 const Hero = () => {
+  const [isLottieLoaded, setIsLottieLoaded] = useState(false);
+
+  useEffect(() => {
+    // Set a minimum loading time for better UX
+    const timer = setTimeout(() => {
+      if (!isLottieLoaded) {
+        setIsLottieLoaded(true);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [isLottieLoaded]);
+
   return (
     <section className="relative min-h-[600px] md:min-h-[700px] flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-white">
       {/* Animated Background Particles */}
@@ -25,7 +39,7 @@ const Hero = () => {
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/40 to-transparent"></div>
 
-      <div className="container mx-auto px-4 py-20 relative z-10">
+      <div className="container mx-auto px-4 pt-24 md:pt-28 pb-12 md:pb-16 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="max-w-2xl">
@@ -74,17 +88,30 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Right Side - Hero SVG */}
+          {/* Right Side - Hero Lottie Animation */}
           <div className="hidden lg:flex items-center justify-center relative">
             <div className="relative w-full max-w-lg hero-svg-wrapper">
-              <img 
-                src={heroSvg} 
-                alt="Gaming Hero" 
-                className="w-full h-auto object-contain animate-float"
-                style={{ 
-                  filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1))',
-                }}
-              />
+              {!isLottieLoaded && (
+                <div className="w-full h-full flex items-center justify-center min-h-[400px]">
+                  <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                    <p className="text-gray-600 font-medium">Loading animation...</p>
+                  </div>
+                </div>
+              )}
+              <div className={isLottieLoaded ? 'block animate-fade-in' : 'hidden'}>
+                <Lottie 
+                  animationData={gameControllerAnimation}
+                  className="w-full h-auto object-contain animate-float"
+                  style={{ 
+                    filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1))',
+                  }}
+                  loop={true}
+                  autoplay={true}
+                  onComplete={() => setIsLottieLoaded(true)}
+                  onLoadedData={() => setIsLottieLoaded(true)}
+                />
+              </div>
             </div>
           </div>
         </div>
